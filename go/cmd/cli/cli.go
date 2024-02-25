@@ -18,26 +18,32 @@ func main() {
 		logger.SharedLogger.Info(" delete <path>")
 	}
 
-	if arr, err := util.Cmd(os.Args, "compare", 2); err == nil {
-		if err := fsprovider.CompareFolders(arr[0], arr[1]); err != nil {
+	if args, err := util.Cmd(os.Args, "compare", 2); err == nil {
+		if err := fsprovider.CompareFolders(args[0], args[1]); err != nil {
 			logger.SharedLogger.Error(err.Error())
 		}
 	}
 
-	if arr, err := util.Cmd(os.Args, "copy", 2); err == nil {
-		if err := fsprovider.CopyDirectory(arr[0], arr[1]); err != nil {
+	if args, err := util.Cmd(os.Args, "copy", 2); err == nil {
+		if err := fsprovider.CopyDirectory(args[0], args[1]); err != nil {
 			logger.SharedLogger.Error(err.Error())
 		}
 	}
 
-	if arr, err := util.Cmd(os.Args, "extract", 2); err == nil {
-		if err := process.Extract(arr[0], arr[1]); err != nil {
+	if args, err := util.Cmd(os.Args, "extract", 2); err == nil {
+		if err := process.Extract(args[0], args[1]); err != nil {
 			logger.SharedLogger.Error(err.Error())
 		}
 	}
 
-	if arr, err := util.Cmd(os.Args, "delete", 1); err == nil {
-		if err := fsprovider.RemoveAll(fsprovider.Relative(arr[0])); err != nil {
+	if args, err := util.Cmd(os.Args, "delete", 1); err == nil {
+		if err := fsprovider.RemoveAll(fsprovider.Relative(args[0])); err != nil {
+			logger.SharedLogger.Error(err.Error())
+		}
+	}
+
+	if args, err := util.Cmd(os.Args, "write_quest_gmd_languages", 0); err == nil {
+		if err := util.WriteQuestGMDLanguages(args[0], args[1]); err != nil {
 			logger.SharedLogger.Error(err.Error())
 		}
 	}

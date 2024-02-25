@@ -5,9 +5,14 @@ import (
 
 	"github.com/ricochhet/mhwarchivemanager/pkg/fsprovider"
 	"github.com/ricochhet/mhwarchivemanager/pkg/logger"
+	"github.com/ricochhet/mhwarchivemanager/pkg/manager"
 	"github.com/ricochhet/mhwarchivemanager/pkg/sevenzip"
 	"github.com/ricochhet/mhwarchivemanager/pkg/util"
 )
+
+func _DummyUpdateFunc() {
+	logger.SharedLogger.Debug("Called: _DummyUpdateFunc()")
+}
 
 func main() {
 	if _, err := util.Cmd(os.Args, "help", 0); err == nil {
@@ -42,6 +47,26 @@ func main() {
 		if err := fsprovider.RemoveAll(fsprovider.Relative(args[0])); err != nil {
 			logger.SharedLogger.Error(err.Error())
 		}
+	}
+
+	if _, err := util.Cmd(os.Args, "launch", 0); err == nil {
+		manager.A_LaunchProgram(_DummyUpdateFunc)
+	}
+
+	if args, err := util.Cmd(os.Args, "index", 2); err == nil {
+		manager.A_IndexDirectory(args[0], args[1], _DummyUpdateFunc)
+	}
+
+	if args, err := util.Cmd(os.Args, "install", 2); err == nil {
+		manager.A_InstallDirectory(args[0], _DummyUpdateFunc)
+	}
+
+	if args, err := util.Cmd(os.Args, "add_profile", 1); err == nil {
+		manager.A_AddProfile(args[0], _DummyUpdateFunc)
+	}
+
+	if args, err := util.Cmd(os.Args, "remove_profile", 1); err == nil {
+		manager.A_RemoveProfile(args[0], _DummyUpdateFunc)
 	}
 
 	if args, err := util.Cmd(os.Args, "write_quest_gmd_languages", 0); err == nil {

@@ -23,24 +23,40 @@ func main() {
 	}
 
 	if arg1 == "compare" {
+		if err := util.IsStringEmpty(arg2, arg3); err != nil {
+			return
+		}
+
 		if err := fsprovider.CompareFolders(arg2, arg3); err != nil {
 			logger.SharedLogger.Error(err.Error())
 		}
 	}
 
 	if arg1 == "copy" {
+		if err := util.IsStringEmpty(arg2, arg3); err != nil {
+			return
+		}
+
 		if err := fsprovider.CopyDirectory(arg2, arg3); err != nil {
 			logger.SharedLogger.Error(err.Error())
 		}
 	}
 
 	if arg1 == "extract" {
+		if err := util.IsStringEmpty(arg2, arg3); err != nil {
+			return
+		}
+
 		if err := process.Extract(arg2, arg3); err != nil {
 			logger.SharedLogger.Error(err.Error())
 		}
 	}
 
 	if arg1 == "delete" {
+		if err := util.IsStringEmpty(arg2); err != nil {
+			return
+		}
+
 		if err := fsprovider.RemoveAll(fsprovider.Relative(arg2)); err != nil {
 			logger.SharedLogger.Error(err.Error())
 		}

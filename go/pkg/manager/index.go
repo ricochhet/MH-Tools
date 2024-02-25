@@ -50,6 +50,25 @@ func GetSavedIndexPath(profileName string) string {
 	return ""
 }
 
+func ExcludeFromIndex(profileName string) ([]string, error) {
+	if len(profileName) == 0 {
+		profileName = config.DefaultProfileName
+	}
+
+	exclusionPath := fsprovider.Relative(config.DataDirectory, config.SettingsDirectory, profileName, config.ExclusionFile)
+	if err := os.MkdirAll(filepath.Dir(exclusionPath), os.ModePerm); err != nil {
+		return nil, err
+	}
+
+	file, err := os.OpenFile(exclusionPath, os.O_RDWR|os.O_CREATE, 0666)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	return fsprovider.ScanValidEntries(file), nil
+}
+
 func IndexDirectory(profileName string, directoryPath string) error {
 	if len(profileName) == 0 {
 		profileName = config.DefaultProfileName
@@ -66,6 +85,11 @@ func IndexDirectory(profileName string, directoryPath string) error {
 	}
 	defer file.Close()
 
+	exclusionEntries, err := ExcludeFromIndex(profileName)
+	if err != nil {
+		return err
+	}
+
 	existingEntries := fsprovider.ScanValidEntries(file)
 
 	err = filepath.Walk(directoryPath, func(path string, info os.FileInfo, err error) error {
@@ -75,6 +99,10 @@ func IndexDirectory(profileName string, directoryPath string) error {
 
 		ext := filepath.Ext(path)
 		if slices.Contains(config.ValidFileTypes, ext) && !slices.Contains(existingEntries, path) {
+			if slices.Contains(exclusionEntries, path) {
+				return nil
+			}
+
 			logger.SharedLogger.Info("Adding: " + path)
 			existingEntries = append(existingEntries, path)
 		}

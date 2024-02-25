@@ -17,7 +17,7 @@ func Cmd(args []string, name string, argCount int) ([]string, error) {
 
 		if ind != -1 {
 			if len(args) >= argCount+BIN_SIZE {
-				nameArgs = append(nameArgs, args[ind:]...)
+				nameArgs = append(nameArgs, args[ind+1:]...)
 				return nameArgs, nil
 			}
 

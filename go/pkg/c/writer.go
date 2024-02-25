@@ -10,6 +10,14 @@ type Writer struct {
 	file *os.File
 }
 
+type FileEntry struct {
+	FileName      string
+	FileNameLower uint32
+	FileNameUpper uint32
+	Offset        uint64
+	UncompSize    uint64
+}
+
 func NewWriter(fileName string, append bool) (*Writer, error) {
 	var file *os.File
 	var err error

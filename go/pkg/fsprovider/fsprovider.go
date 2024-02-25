@@ -9,6 +9,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	"github.com/ricochhet/mhwarchivemanager/pkg/logger"
@@ -199,4 +200,30 @@ func CompareFolders(folder1, folder2 string) error {
 	}
 
 	return nil
+}
+
+func SortByParentAndName(files []string) []string {
+	sort.Slice(files, func(i, j int) bool {
+		parentA := filepath.Dir(files[i])
+		parentB := filepath.Dir(files[j])
+
+		if parentA == parentB {
+			return filepath.Base(files[i]) < filepath.Base(files[j])
+		}
+		return parentA < parentB
+	})
+
+	return files
+}
+
+func GetSortedFiles(directory string) []string {
+	var files []string
+	filepath.Walk(directory, func(path string, info os.FileInfo, err error) error {
+		if err == nil && !info.IsDir() {
+			files = append(files, path)
+		}
+		return nil
+	})
+
+	return SortByParentAndName(files)
 }

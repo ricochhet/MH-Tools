@@ -6,6 +6,7 @@ import (
 	"github.com/ricochhet/mhwarchivemanager/pkg/fsprovider"
 	"github.com/ricochhet/mhwarchivemanager/pkg/logger"
 	"github.com/ricochhet/mhwarchivemanager/pkg/manager"
+	"github.com/ricochhet/mhwarchivemanager/pkg/pak"
 	"github.com/ricochhet/mhwarchivemanager/pkg/sevenzip"
 	"github.com/ricochhet/mhwarchivemanager/pkg/util"
 )
@@ -73,5 +74,9 @@ func main() {
 		if err := util.WriteQuestGMDLanguages(args[0], args[1]); err != nil {
 			logger.SharedLogger.Error(err.Error())
 		}
+	}
+
+	if args, err := util.Cmd(os.Args, "pak", 1); err == nil {
+		pak.ProcessDirectory(args[0], "re_chunk_00x.pak.patch_00y.pak")
 	}
 }

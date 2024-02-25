@@ -1,0 +1,2 @@
+id ICON "./res/app_win.ico"
+GLFW_ICON ICON "./res/app_win.ico"

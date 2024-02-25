@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"strings"
 
 	"github.com/ricochhet/mhwarchivemanager/pkg/fsprovider"
 	"github.com/ricochhet/mhwarchivemanager/pkg/logger"
@@ -10,11 +11,7 @@ import (
 )
 
 func main() {
-	arg1 := util.GetStringAtIndex(os.Args, 1)
-	arg2 := util.GetStringAtIndex(os.Args, 2)
-	arg3 := util.GetStringAtIndex(os.Args, 3)
-
-	if arg1 == "help" {
+	if _, err := util.Cmd(os.Args, "help", 0); err == nil {
 		logger.SharedLogger.Info("Usage: ")
 		logger.SharedLogger.Info(" compare <folder1> <folder2>")
 		logger.SharedLogger.Info(" copy <source> <destination>")
@@ -22,42 +19,30 @@ func main() {
 		logger.SharedLogger.Info(" delete <path>")
 	}
 
-	if arg1 == "compare" {
-		if err := util.IsStringEmpty(arg2, arg3); err != nil {
-			return
-		}
+	if arr, err := util.Cmd(os.Args, "testcmd", 2); err == nil {
+		logger.SharedLogger.Info(strings.Join(arr, ", "))
+	}
 
-		if err := fsprovider.CompareFolders(arg2, arg3); err != nil {
+	if arr, err := util.Cmd(os.Args, "compare", 2); err == nil {
+		if err := fsprovider.CompareFolders(arr[0], arr[1]); err != nil {
 			logger.SharedLogger.Error(err.Error())
 		}
 	}
 
-	if arg1 == "copy" {
-		if err := util.IsStringEmpty(arg2, arg3); err != nil {
-			return
-		}
-
-		if err := fsprovider.CopyDirectory(arg2, arg3); err != nil {
+	if arr, err := util.Cmd(os.Args, "copy", 2); err == nil {
+		if err := fsprovider.CopyDirectory(arr[0], arr[1]); err != nil {
 			logger.SharedLogger.Error(err.Error())
 		}
 	}
 
-	if arg1 == "extract" {
-		if err := util.IsStringEmpty(arg2, arg3); err != nil {
-			return
-		}
-
-		if err := process.Extract(arg2, arg3); err != nil {
+	if arr, err := util.Cmd(os.Args, "extract", 2); err == nil {
+		if err := process.Extract(arr[0], arr[1]); err != nil {
 			logger.SharedLogger.Error(err.Error())
 		}
 	}
 
-	if arg1 == "delete" {
-		if err := util.IsStringEmpty(arg2); err != nil {
-			return
-		}
-
-		if err := fsprovider.RemoveAll(fsprovider.Relative(arg2)); err != nil {
+	if arr, err := util.Cmd(os.Args, "delete", 1); err == nil {
+		if err := fsprovider.RemoveAll(fsprovider.Relative(arr[0])); err != nil {
 			logger.SharedLogger.Error(err.Error())
 		}
 	}

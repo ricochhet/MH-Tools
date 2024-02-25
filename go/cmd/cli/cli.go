@@ -2,7 +2,6 @@ package main
 
 import (
 	"os"
-	"strings"
 
 	"github.com/ricochhet/mhwarchivemanager/pkg/fsprovider"
 	"github.com/ricochhet/mhwarchivemanager/pkg/logger"
@@ -17,10 +16,6 @@ func main() {
 		logger.SharedLogger.Info(" copy <source> <destination>")
 		logger.SharedLogger.Info(" extract <source> <destination>")
 		logger.SharedLogger.Info(" delete <path>")
-	}
-
-	if arr, err := util.Cmd(os.Args, "testcmd", 2); err == nil {
-		logger.SharedLogger.Info(strings.Join(arr, ", "))
 	}
 
 	if arr, err := util.Cmd(os.Args, "compare", 2); err == nil {

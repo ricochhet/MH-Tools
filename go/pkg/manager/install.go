@@ -10,7 +10,7 @@ import (
 	"github.com/ricochhet/mhwarchivemanager/pkg/config"
 	"github.com/ricochhet/mhwarchivemanager/pkg/fsprovider"
 	"github.com/ricochhet/mhwarchivemanager/pkg/logger"
-	"github.com/ricochhet/mhwarchivemanager/pkg/process"
+	"github.com/ricochhet/mhwarchivemanager/pkg/sevenzip"
 )
 
 func InstallDirectory(profileName string) error {
@@ -77,14 +77,15 @@ func extract(file *os.File, tempPath string) []string {
 			continue
 		}
 		zipFilePath := strings.TrimSpace(scanner.Text())
-		if !process.DoesExecutableExist("7z") {
-			logger.SharedLogger.Error("7zip was not found.")
+		extractedDir := path.Join(tempPath, fsprovider.FileNameWithoutExtension(zipFilePath))
+		logger.SharedLogger.Info("Extracting: " + extractedDir)
+		sz, err := sevenzip.Extract(zipFilePath, tempPath)
+		if sz == sevenzip.PROCESS_NOT_FOUND {
+			logger.SharedLogger.Error("Error " + err.Error())
 			break
 		}
 
-		extractedDir := path.Join(tempPath, fsprovider.FileNameWithoutExtension(zipFilePath))
-		logger.SharedLogger.Info("Extracting: " + extractedDir)
-		if err := process.RunExecutable("7z", true, "x", zipFilePath, "-o"+tempPath+"/*"); err != nil {
+		if sz == sevenzip.COULD_NOT_EXTRACT {
 			logger.SharedLogger.Error("Error extracting " + zipFilePath + ": " + err.Error())
 			continue
 		}

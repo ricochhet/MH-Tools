@@ -5,7 +5,7 @@ import (
 
 	"github.com/ricochhet/mhwarchivemanager/pkg/fsprovider"
 	"github.com/ricochhet/mhwarchivemanager/pkg/logger"
-	"github.com/ricochhet/mhwarchivemanager/pkg/process"
+	"github.com/ricochhet/mhwarchivemanager/pkg/sevenzip"
 	"github.com/ricochhet/mhwarchivemanager/pkg/util"
 )
 
@@ -16,6 +16,8 @@ func main() {
 		logger.SharedLogger.Info(" copy <source> <destination>")
 		logger.SharedLogger.Info(" extract <source> <destination>")
 		logger.SharedLogger.Info(" delete <path>")
+		logger.SharedLogger.Info("Tools: ")
+		logger.SharedLogger.Info(" write_quest_gmd_languages <path> <language>")
 	}
 
 	if args, err := util.Cmd(os.Args, "compare", 2); err == nil {
@@ -31,7 +33,7 @@ func main() {
 	}
 
 	if args, err := util.Cmd(os.Args, "extract", 2); err == nil {
-		if err := process.Extract(args[0], args[1]); err != nil {
+		if _, err := sevenzip.Extract(args[0], args[1]); err != nil {
 			logger.SharedLogger.Error(err.Error())
 		}
 	}

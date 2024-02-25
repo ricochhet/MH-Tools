@@ -1,6 +1,7 @@
 package manager
 
 import (
+	"errors"
 	"os"
 	"path/filepath"
 
@@ -24,7 +25,7 @@ func Launch() error {
 
 	if entries := fsprovider.ScanValidEntries(file); len(entries) != 0 {
 		firstEntry := entries[0]
-		if !process.DoesExecutableExist(firstEntry) {
+		if _, err := os.Stat(firstEntry); errors.Is(err, os.ErrNotExist) {
 			logger.SharedLogger.Warn("The executable " + firstEntry + " could not be found")
 			return err
 		}

@@ -1,51 +1,47 @@
 package main
 
 import (
-	"flag"
 	"os"
 
-	"github.com/ricochhet/mhwarchivemanager/pkg/config"
 	"github.com/ricochhet/mhwarchivemanager/pkg/fsprovider"
 	"github.com/ricochhet/mhwarchivemanager/pkg/logger"
-	"github.com/ricochhet/mhwarchivemanager/pkg/manager"
+	"github.com/ricochhet/mhwarchivemanager/pkg/process"
+	"github.com/ricochhet/mhwarchivemanager/pkg/util"
 )
 
 func main() {
-	indexPathPtr := flag.String("index", "", "indexPathPtr")
-	installPathPtr := flag.Bool("install", false, "installPathPtr")
-	launchPtr := flag.Bool("launch", false, "launchPtr")
-	flag.Parse()
+	arg1 := util.GetStringAtIndex(os.Args, 1)
+	arg2 := util.GetStringAtIndex(os.Args, 2)
+	arg3 := util.GetStringAtIndex(os.Args, 3)
 
-	if len(*indexPathPtr) != 0 {
-		logger.SharedLogger.Info("Creating index")
-		err := manager.IndexDirectory(config.DefaultProfileName, *indexPathPtr)
-		if err != nil {
+	if arg1 == "help" {
+		logger.SharedLogger.Info("Usage: ")
+		logger.SharedLogger.Info(" compare <folder1> <folder2>")
+		logger.SharedLogger.Info(" copy <source> <destination>")
+		logger.SharedLogger.Info(" extract <source> <destination>")
+		logger.SharedLogger.Info(" delete <path>")
+	}
+
+	if arg1 == "compare" {
+		if err := fsprovider.CompareFolders(arg2, arg3); err != nil {
 			logger.SharedLogger.Error(err.Error())
 		}
 	}
 
-	if *installPathPtr {
-		logger.SharedLogger.Info("Creating install")
-		err := manager.InstallDirectory(config.DefaultProfileName)
-		if err != nil {
+	if arg1 == "copy" {
+		if err := fsprovider.CopyDirectory(arg2, arg3); err != nil {
 			logger.SharedLogger.Error(err.Error())
 		}
 	}
 
-	if *launchPtr {
-		logger.SharedLogger.Info("Launching program")
-		err := manager.Launch()
-		if err != nil {
+	if arg1 == "extract" {
+		if err := process.Extract(arg2, arg3); err != nil {
 			logger.SharedLogger.Error(err.Error())
 		}
 	}
 
-	if os.Args[1] == "diff" {
-		folder1 := os.Args[2]
-		folder2 := os.Args[3]
-
-		err := fsprovider.CompareFolders(folder1, folder2)
-		if err != nil {
+	if arg1 == "delete" {
+		if err := fsprovider.RemoveAll(fsprovider.Relative(arg2)); err != nil {
 			logger.SharedLogger.Error(err.Error())
 		}
 	}

@@ -3,7 +3,6 @@ package manager
 import (
 	"bufio"
 	"os"
-	"os/exec"
 	"path"
 	"path/filepath"
 	"strings"
@@ -99,10 +98,4 @@ func extract(file *os.File, tempPath string) []string {
 	}
 
 	return extractedDirs
-}
-
-func extractArchive(archive string) error {
-	tempPath := path.Join(config.DataDirectory, config.TempDirectory)
-	cmd := exec.Command("7z", "x", archive, "-o"+tempPath+"/*")
-	return cmd.Run()
 }

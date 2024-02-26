@@ -8,6 +8,10 @@ import (
 	"github.com/ricochhet/mhwarchivemanager/pkg/logger"
 )
 
+func A_DummyUpdateFunc() {
+	logger.SharedLogger.Debug("Called: A_DummyUpdateFunc()")
+}
+
 func A_LaunchProgram(giuUpdate func()) {
 	logger.ClearCache()
 	giuUpdate()

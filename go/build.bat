@@ -3,9 +3,12 @@ mkdir build
 
 echo Building MHWArchiveManager
 cd cmd/main
-@REM go build -o ../../build/MHWArchiveManager.exe -ldflags="-s -w -H=windowsgui -extldflags=-static" .
 go build -o ../../build/MHWArchiveManager.exe -ldflags="-s -w -extldflags=-static" .
 
-echo Building MHWArchiveManager.CLI
+echo Building MHWArchiveManager.Gui
+cd ../gui_only
+go build -o ../../build/MHWArchiveManager.Gui.exe -ldflags="-s -w -H=windowsgui -extldflags=-static" .
+
+echo Building MHWArchiveManager.Cli
 cd ../cli_only
-go build -o ../../build/MHWArchiveManager.CLI.exe -ldflags="-s -w -extldflags=-static" .
+go build -o ../../build/MHWArchiveManager.Cli.exe -ldflags="-s -w -extldflags=-static" .

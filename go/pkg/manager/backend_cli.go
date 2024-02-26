@@ -1,4 +1,4 @@
-package main
+package manager
 
 import (
 	"os"
@@ -6,35 +6,25 @@ import (
 
 	"github.com/ricochhet/mhwarchivemanager/pkg/fsprovider"
 	"github.com/ricochhet/mhwarchivemanager/pkg/logger"
-	"github.com/ricochhet/mhwarchivemanager/pkg/manager"
 	"github.com/ricochhet/mhwarchivemanager/pkg/pak"
 	"github.com/ricochhet/mhwarchivemanager/pkg/sevenzip"
 	"github.com/ricochhet/mhwarchivemanager/pkg/util"
 )
 
-var CommandList = map[string]string{
-	"Usage:":                                        "",
-	"  compare <folder1> <folder2>":                 "",
-	"  copy <source> <destination>":                 "",
-	"  extract <source> <destination>":              "",
-	"  delete <path>":                               "",
-	"Pak Tools:":                                    "",
-	"  pak <folder> <output> <0/1[embed data]>":     "",
-	"  unpak <folder> <output> <0/1[embed data]>":   "",
-	"  compress <file>":                             "",
-	"  decompress <file>":                           "",
-	"Misc Tools:":                                   "",
-	"  write_quest_gmd_languages <path> <language>": "",
-}
-
-func main() {
+func A_InitializeCommandLine() {
 	if _, err := util.Cmd(os.Args, "help", 0); err == nil {
-		for command, description := range CommandList {
-			logger.SharedLogger.Info(command)
-			if description != "" {
-				logger.SharedLogger.Info("  " + description)
-			}
-		}
+		logger.SharedLogger.Info("Usage: ")
+		logger.SharedLogger.Info("  compare <folder1> <folder2>")
+		logger.SharedLogger.Info("  copy <source> <destination>")
+		logger.SharedLogger.Info("  extract <source> <destination>")
+		logger.SharedLogger.Info("  delete <path>")
+		logger.SharedLogger.Info("Pak Tools: ")
+		logger.SharedLogger.Info("  pak <folder> <output> <0/1[embed data]>")
+		logger.SharedLogger.Info("  unpak <folder> <output> <0/1[embed data]>")
+		logger.SharedLogger.Info("  compress <file>")
+		logger.SharedLogger.Info("  decompress <file>")
+		logger.SharedLogger.Info("Misc Tools: ")
+		logger.SharedLogger.Info("  write_quest_gmd_languages <path> <language>")
 	}
 
 	if args, err := util.Cmd(os.Args, "compare", 2); err == nil {
@@ -62,23 +52,23 @@ func main() {
 	}
 
 	if _, err := util.Cmd(os.Args, "launch", 0); err == nil {
-		manager.A_LaunchProgram(manager.A_DummyUpdateFunc)
+		A_LaunchProgram(A_DummyUpdateFunc)
 	}
 
 	if args, err := util.Cmd(os.Args, "index", 2); err == nil {
-		manager.A_IndexDirectory(args[0], args[1], manager.A_DummyUpdateFunc)
+		A_IndexDirectory(args[0], args[1], A_DummyUpdateFunc)
 	}
 
 	if args, err := util.Cmd(os.Args, "install", 2); err == nil {
-		manager.A_InstallDirectory(args[0], manager.A_DummyUpdateFunc)
+		A_InstallDirectory(args[0], A_DummyUpdateFunc)
 	}
 
 	if args, err := util.Cmd(os.Args, "add_profile", 1); err == nil {
-		manager.A_AddProfile(args[0], manager.A_DummyUpdateFunc)
+		A_AddProfile(args[0], A_DummyUpdateFunc)
 	}
 
 	if args, err := util.Cmd(os.Args, "remove_profile", 1); err == nil {
-		manager.A_RemoveProfile(args[0], manager.A_DummyUpdateFunc)
+		A_RemoveProfile(args[0], A_DummyUpdateFunc)
 	}
 
 	if args, err := util.Cmd(os.Args, "write_quest_gmd_languages", 0); err == nil {

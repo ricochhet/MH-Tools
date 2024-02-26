@@ -66,6 +66,10 @@ func (l *Logger) Error(message string) {
 	l.log(ErrorLevel, message)
 }
 
+func (l *Logger) NewLine() {
+	fmt.Printf("\n")
+}
+
 func ClearCache() {
 	LogCache = []string{}
 }

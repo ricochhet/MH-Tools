@@ -1,14 +1,16 @@
 package config
 
-const DataDirectory = "MHWArchiveManager_Data"
-const IndexFile = "MHWArchiveManager_Index.txt"
-const LaunchFile = "MHWArchiveManager_Launcher.txt"
-const ExclusionFile = "MHWArchiveManager_Exclusions.txt"
-const SavedIndexPathFile = "MHWArchiveManager_IndexSave.txt"
-const ProfileListFile = "MHWArchiveManager_ProfileList.txt"
-const DefaultProfileName = "DefaultProfile"
-const TempDirectory = "Temp"
-const SettingsDirectory = "Settings"
-const OutputDirectory = "nativePC"
+const (
+	DataDirectory      = "MHWArchiveManager_Data"
+	IndexFile          = "MHWArchiveManager_Index.txt"
+	LaunchFile         = "MHWArchiveManager_Launcher.txt"
+	ExclusionFile      = "MHWArchiveManager_Exclusions.txt"
+	SavedIndexPathFile = "MHWArchiveManager_IndexSave.txt"
+	ProfileListFile    = "MHWArchiveManager_ProfileList.txt"
+	DefaultProfileName = "DefaultProfile"
+	TempDirectory      = "Temp"
+	SettingsDirectory  = "Settings"
+	OutputDirectory    = "nativePC"
+)
 
 var ValidFileTypes = []string{".zip", ".7z", ".rar"}

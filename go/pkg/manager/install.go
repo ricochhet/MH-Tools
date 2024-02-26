@@ -79,13 +79,13 @@ func extract(file *os.File, tempPath string) []string {
 		zipFilePath := strings.TrimSpace(scanner.Text())
 		extractedDir := path.Join(tempPath, fsprovider.FileNameWithoutExtension(zipFilePath))
 		logger.SharedLogger.Info("Extracting: " + extractedDir)
-		sz, err := sevenzip.Extract(zipFilePath, tempPath)
-		if sz == sevenzip.PROCESS_NOT_FOUND {
+		szerr, err := sevenzip.Extract(zipFilePath, tempPath)
+		if szerr == sevenzip.ProcessNotFound {
 			logger.SharedLogger.Error("Error " + err.Error())
 			break
 		}
 
-		if sz == sevenzip.COULD_NOT_EXTRACT {
+		if szerr == sevenzip.CouldNotExtract {
 			logger.SharedLogger.Error("Error extracting " + zipFilePath + ": " + err.Error())
 			continue
 		}

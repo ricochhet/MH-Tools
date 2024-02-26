@@ -18,6 +18,29 @@ type FileEntry struct {
 	UncompSize    uint64
 }
 
+type DataEntry struct {
+	Hash     uint32
+	FileName string
+}
+
+func FindByHash(data []DataEntry, hash uint32) *DataEntry {
+	for _, entry := range data {
+		if entry.Hash == hash {
+			return &entry
+		}
+	}
+	return nil
+}
+
+func FindByFileName(data []DataEntry, fileName string) *DataEntry {
+	for _, entry := range data {
+		if entry.FileName == fileName {
+			return &entry
+		}
+	}
+	return nil
+}
+
 func NewWriter(fileName string, append bool) (*Writer, error) {
 	var file *os.File
 	var err error

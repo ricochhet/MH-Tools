@@ -4,6 +4,7 @@ import (
 	"encoding/binary"
 	"fmt"
 	"math"
+	"os"
 	"path/filepath"
 	"strings"
 
@@ -13,11 +14,14 @@ import (
 	"github.com/ricochhet/mhwarchivemanager/pkg/murmurhash3"
 )
 
-func ProcessDirectory(path string, outputFile string) {
+func ProcessDirectory(path string, outputFile string, embed bool) {
 	directory, _ := filepath.Abs(path)
 	sortedFiles := fsprovider.GetSortedFiles(filepath.Join(directory, "natives"))
 	writer, err := c.NewWriter(outputFile, false)
+
+	var data []c.DataEntry
 	var list []c.FileEntry
+
 	if err != nil {
 		logger.SharedLogger.Error(err.Error())
 		return
@@ -65,6 +69,9 @@ func ProcessDirectory(path string, outputFile string) {
 		fileEntry2.FileNameUpper = uint32(hash2)
 		list = append(list, fileEntry2)
 		writer.Write(array2)
+
+		data = append(data, c.DataEntry{Hash: hash, FileName: text})
+		data = append(data, c.DataEntry{Hash: hash2, FileName: text})
 	}
 
 	writer.SeekFromBeginning(16)
@@ -80,5 +87,196 @@ func ProcessDirectory(path string, outputFile string) {
 		writer.WriteUInt32(0)
 	}
 
+	if embed {
+		writer.SeekFromEnd(0)
+		WriteData(writer, data)
+	} else {
+		dataWriter, err := c.NewWriter(outputFile+".data", false)
+		if err != nil {
+			logger.SharedLogger.Error(err.Error())
+			return
+		}
+
+		WriteData(dataWriter, data)
+		dataWriter.Close()
+	}
+
 	writer.Close()
+}
+
+func ExtractDirectory(path string, outputDirectory string, embed bool) {
+	reader, err := c.NewReader(path)
+	var table []c.DataEntry
+	if embed {
+		table = ReadData(reader)
+	} else {
+		dataReader, err := c.NewReader(path + ".data")
+		if err != nil {
+			logger.SharedLogger.Error(err.Error())
+			return
+		}
+		table = ReadData(dataReader)
+		dataReader.Close()
+	}
+	if err != nil {
+		logger.SharedLogger.Error(err.Error())
+		return
+	}
+
+	reader.Seek(0, 0)
+	unk0, _ := reader.ReadUInt32()
+	unk1, _ := reader.ReadUInt32()
+	unk2, _ := reader.ReadUInt32()
+	reader.ReadUInt32()
+
+	if unk0 != 1095454795 || unk1 != 4 {
+		logger.SharedLogger.Error("Invalid file format")
+		return
+	}
+
+	var list []c.FileEntry
+
+	for i := uint32(0); i < unk2; i++ {
+		fileEntry := c.FileEntry{}
+		fileEntry.FileNameLower, _ = reader.ReadUInt32()
+		fileEntry.FileNameUpper, _ = reader.ReadUInt32()
+		fileEntry.Offset, _ = reader.ReadUInt64()
+		fileEntry.UncompSize, _ = reader.ReadUInt64()
+		reader.SeekFromCurrent(8)
+		reader.SeekFromCurrent(8)
+		reader.SeekFromCurrent(4)
+		reader.SeekFromCurrent(4)
+		list = append(list, fileEntry)
+	}
+
+	for _, entry := range list {
+		dataEntry := c.FindByHash(table, entry.FileNameLower)
+		if dataEntry == nil {
+			logger.SharedLogger.Error("File entry not found")
+			break
+		}
+
+		filePath := filepath.Join(outputDirectory, dataEntry.FileName)
+		fileData := make([]byte, entry.UncompSize)
+		reader.Read(fileData)
+
+		if len(fileData) > 1073741824 {
+			logger.SharedLogger.Error("File too large")
+			return
+		}
+
+		if err := os.MkdirAll(filepath.Dir(filePath), os.ModePerm); err != nil {
+			return
+		}
+
+		writer, err := c.NewWriter(filePath, false)
+		if err != nil {
+			logger.SharedLogger.Error(err.Error())
+			return
+		}
+		writer.Write(fileData)
+		writer.Close()
+	}
+
+	reader.Close()
+}
+
+func CompressPakData(path string) {
+	writer, err := c.NewWriter(path, true)
+	if err != nil {
+		logger.SharedLogger.Error(err.Error())
+		return
+	}
+
+	reader, err := c.NewReader(path + ".data")
+	if err != nil {
+		logger.SharedLogger.Error(err.Error())
+		return
+	}
+
+	data := ReadData(reader)
+	writer.SeekFromEnd(0)
+	WriteData(writer, data)
+
+	reader.Close()
+	writer.Close()
+
+	if err := fsprovider.RemoveAll(fsprovider.Relative(path + ".data")); err != nil {
+		logger.SharedLogger.Error(err.Error())
+		return
+	}
+}
+
+func DecompressPakData(path string) {
+	reader, err := c.NewReader(path)
+	if err != nil {
+		logger.SharedLogger.Error(err.Error())
+		return
+	}
+
+	writer, err := c.NewWriter(path+".data", false)
+	if err != nil {
+		logger.SharedLogger.Error(err.Error())
+		return
+	}
+
+	data := ReadData(reader)
+	WriteData(writer, data)
+	writer.Close()
+
+	reader.SeekFromEnd(-8)
+	dataSize, _ := reader.ReadUInt64()
+
+	reader.Seek(0, 0)
+	size, _ := reader.Size()
+	decompSize := size - (int64(dataSize) - 8)
+	buffer := make([]byte, decompSize)
+	reader.Read(buffer)
+	reader.Close()
+
+	decomp, err := c.NewWriter(path, false)
+	if err != nil {
+		logger.SharedLogger.Error(err.Error())
+		return
+	}
+	decomp.Write(buffer)
+	decomp.Close()
+}
+
+func WriteData(writer *c.Writer, data []c.DataEntry) {
+	startPos, _ := writer.Position()
+	for _, entry := range data {
+		writer.WriteUInt32(entry.Hash)
+		writer.WriteChar(entry.FileName + "\000")
+	}
+	endPos, _ := writer.Position()
+	writer.WriteUInt64(uint64(endPos - startPos))
+}
+
+func ReadData(reader *c.Reader) []c.DataEntry {
+	var data []c.DataEntry
+
+	reader.SeekFromEnd(-8)
+	dataSize, _ := reader.ReadUInt64()
+	reader.SeekFromEnd(int64(-dataSize - 8))
+	pos, _ := reader.Position()
+	size, _ := reader.Size()
+
+	for pos < size-8 {
+		pos, _ = reader.Position()
+		hash, _ := reader.ReadUInt32()
+		var fileName string
+		for {
+			c, _ := reader.ReadChar()
+			if c == '\000' {
+				break
+			}
+
+			fileName += string(c)
+		}
+
+		data = append(data, c.DataEntry{Hash: hash, FileName: fileName})
+	}
+
+	return data
 }

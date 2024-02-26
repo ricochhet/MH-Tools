@@ -77,6 +77,10 @@ func main() {
 	}
 
 	if args, err := util.Cmd(os.Args, "pak", 1); err == nil {
-		pak.ProcessDirectory(args[0], "re_chunk_00x.pak.patch_00y.pak")
+		pak.ProcessDirectory(args[0], "re_chunk_00x.pak.patch_00y.pak", true)
+	}
+
+	if args, err := util.Cmd(os.Args, "unpak", 2); err == nil {
+		pak.ExtractDirectory(args[0], args[1], true)
 	}
 }

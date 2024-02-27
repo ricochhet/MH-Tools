@@ -9,10 +9,9 @@ import (
 
 func main() {
 	if len(os.Args) > 1 {
-		win32.Console(true)
+		win32.AttachConsoleW()
 		manager.A_InitializeCommandLine()
 	} else {
-		win32.Console(false)
 		manager.A_InitializeUI()
 	}
 }

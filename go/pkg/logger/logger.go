@@ -2,6 +2,8 @@ package logger
 
 import (
 	"fmt"
+	"io"
+	"os"
 	"time"
 )
 
@@ -24,7 +26,12 @@ func NewLogger(minLevel LogLevel) *Logger {
 	return &Logger{MinLevel: minLevel}
 }
 
-func (l *Logger) log(level LogLevel, message string) {
+func (l *Logger) log(level LogLevel, message string, writer io.Writer) {
+	if Stdout == nil {
+		fmt.Fprintln(os.Stdout, "Logger STDOUT is nil")
+		return
+	}
+
 	color := "\033[0m"
 	levelName := "DEBUG"
 	switch level {
@@ -46,32 +53,33 @@ func (l *Logger) log(level LogLevel, message string) {
 		oColor := fmt.Sprintf("[%s] %s[%s]%s %s\n", time.Now().Format("2006-01-02 15:04:05"), color, levelName, "\033[0m", message)
 		oRaw := fmt.Sprintf("[%s] [%s] %s\n", time.Now().Format("2006-01-02 15:04:05"), levelName, message)
 		LogCache = append(LogCache, oRaw)
-		fmt.Printf(oColor)
+		fmt.Fprint(writer, oColor)
 	}
 }
 
 func (l *Logger) Debug(message string) {
-	l.log(DebugLevel, message)
+	l.log(DebugLevel, message, Stdout)
 }
 
 func (l *Logger) Info(message string) {
-	l.log(InfoLevel, message)
+	l.log(InfoLevel, message, Stdout)
 }
 
 func (l *Logger) Warn(message string) {
-	l.log(WarnLevel, message)
+	l.log(WarnLevel, message, Stdout)
 }
 
 func (l *Logger) Error(message string) {
-	l.log(ErrorLevel, message)
+	l.log(ErrorLevel, message, Stdout)
 }
 
 func (l *Logger) NewLine() {
-	fmt.Printf("\n")
+	fmt.Fprint(Stdout, "\n")
 }
 
 func ClearCache() {
 	LogCache = []string{}
 }
 
+var Stdout io.Writer
 var SharedLogger = NewLogger(InfoLevel)

@@ -17,14 +17,14 @@ func T_InstallDirectory(profileName string) error {
 		profileName = config.DefaultProfileName
 	}
 
-	dirPath := fsprovider.Relative(config.DataDirectory, config.SettingsDirectory, profileName, config.OutputDirectory)
+	dirPath := fsprovider.Relative(config.DataDirectory, profileName, config.OutputDirectory)
 	if err := fsprovider.RemoveAll(dirPath); err != nil {
 		logger.SharedLogger.GoRoutineError(err.Error())
 		return err
 	}
 
-	tempPath := fsprovider.Relative(config.DataDirectory, config.SettingsDirectory, profileName, config.TempDirectory)
-	indexPath := fsprovider.Relative(config.DataDirectory, config.SettingsDirectory, profileName, config.IndexFile)
+	tempPath := fsprovider.Relative(config.DataDirectory, profileName, config.TempDirectory)
+	indexPath := fsprovider.Relative(config.DataDirectory, profileName, config.IndexFile)
 	if err := os.MkdirAll(filepath.Dir(indexPath), os.ModePerm); err != nil {
 		logger.SharedLogger.GoRoutineError(err.Error())
 		return err

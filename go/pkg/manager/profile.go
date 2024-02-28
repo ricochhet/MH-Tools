@@ -13,7 +13,7 @@ import (
 )
 
 func AddProfile(name string) error {
-	listFilePath := fsprovider.Relative(config.DataDirectory, config.SettingsDirectory, config.ProfileListFile)
+	listFilePath := fsprovider.Relative(config.DataDirectory, config.ProfileListFile)
 	if err := os.MkdirAll(filepath.Dir(listFilePath), os.ModePerm); err != nil {
 		return err
 	}
@@ -48,7 +48,7 @@ func AddProfile(name string) error {
 }
 
 func RemoveProfile(name string) error {
-	listFilePath := fsprovider.Relative(config.DataDirectory, config.SettingsDirectory, config.ProfileListFile)
+	listFilePath := fsprovider.Relative(config.DataDirectory, config.ProfileListFile)
 	if err := os.MkdirAll(filepath.Dir(listFilePath), os.ModePerm); err != nil {
 		return err
 	}
@@ -81,7 +81,7 @@ func RemoveProfile(name string) error {
 }
 
 func ReadAllProfiles() ([]string, error) {
-	listFilePath := fsprovider.Relative(config.DataDirectory, config.SettingsDirectory, config.ProfileListFile)
+	listFilePath := fsprovider.Relative(config.DataDirectory, config.ProfileListFile)
 	if err := os.MkdirAll(filepath.Dir(listFilePath), os.ModePerm); err != nil {
 		return nil, err
 	}

@@ -16,7 +16,7 @@ func GetSavedIndexPath(profileName string) (string, error) {
 		profileName = config.DefaultProfileName
 	}
 
-	indexPathSaved := fsprovider.Relative(config.DataDirectory, config.SettingsDirectory, profileName, config.SavedIndexPathFile)
+	indexPathSaved := fsprovider.Relative(config.DataDirectory, profileName, config.SavedIndexPathFile)
 	if err := os.MkdirAll(filepath.Dir(indexPathSaved), os.ModePerm); err != nil {
 		return "", err
 	}
@@ -44,7 +44,7 @@ func ExcludeFromIndex(profileName string) ([]string, error) {
 		profileName = config.DefaultProfileName
 	}
 
-	exclusionPath := fsprovider.Relative(config.DataDirectory, config.SettingsDirectory, profileName, config.ExclusionFile)
+	exclusionPath := fsprovider.Relative(config.DataDirectory, profileName, config.ExclusionFile)
 	if err := os.MkdirAll(filepath.Dir(exclusionPath), os.ModePerm); err != nil {
 		return nil, err
 	}
@@ -68,7 +68,7 @@ func T_SaveIndexPath(profileName string, directoryPath string) error {
 		profileName = config.DefaultProfileName
 	}
 
-	indexPathSaved := fsprovider.Relative(config.DataDirectory, config.SettingsDirectory, profileName, config.SavedIndexPathFile)
+	indexPathSaved := fsprovider.Relative(config.DataDirectory, profileName, config.SavedIndexPathFile)
 	if err := os.MkdirAll(filepath.Dir(indexPathSaved), os.ModePerm); err != nil {
 		logger.SharedLogger.GoRoutineError(err.Error())
 		return err
@@ -91,7 +91,7 @@ func T_IndexDirectory(profileName string, directoryPath string) error {
 		profileName = config.DefaultProfileName
 	}
 
-	indexPath := fsprovider.Relative(config.DataDirectory, config.SettingsDirectory, profileName, config.IndexFile)
+	indexPath := fsprovider.Relative(config.DataDirectory, profileName, config.IndexFile)
 	if err := os.MkdirAll(filepath.Dir(indexPath), os.ModePerm); err != nil {
 		logger.SharedLogger.GoRoutineError(err.Error())
 		return err

@@ -12,7 +12,7 @@ import (
 )
 
 func T_Launch() error {
-	launchPath := fsprovider.Relative(config.DataDirectory, config.SettingsDirectory, config.LaunchFile)
+	launchPath := fsprovider.Relative(config.DataDirectory, config.LaunchFile)
 	if err := os.MkdirAll(filepath.Dir(launchPath), os.ModePerm); err != nil {
 		logger.SharedLogger.GoRoutineError(err.Error())
 		return err

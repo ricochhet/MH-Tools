@@ -9,7 +9,6 @@ const (
 	ProfileListFile    = "MHWArchiveManager_ProfileList.txt"
 	DefaultProfileName = "DefaultProfile"
 	TempDirectory      = "Temp"
-	SettingsDirectory  = "Settings"
 	OutputDirectory    = "nativePC"
 )
 

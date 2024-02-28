@@ -1,0 +1,12 @@
+[submodule "dependencies/PolyHook_2_0"]
+	path = dependencies/PolyHook_2_0
+	url = ../../stevemk14ebr/PolyHook_2_0.git
+[submodule "dependencies/json"]
+	path = dependencies/json
+	url = ../../nlohmann/json.git
+[submodule "dependencies/cpr"]
+	path = dependencies/cpr
+	url = ../../libcpr/cpr.git
+[submodule "dependencies/spdlog"]
+	path = dependencies/spdlog
+	url = ../../gabime/spdlog.git

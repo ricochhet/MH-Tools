@@ -1,0 +1,7 @@
+{
+  "logging": true,
+  "enabled": true,
+  "auto_load": true,
+  "targets": [],
+  "modules": []
+}

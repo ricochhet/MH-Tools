@@ -5,5 +5,5 @@ ninja_build_release
 ninja_build_debug
 build-dev.bat
 *.syso
-res
+go/res
 dictionaries/sources

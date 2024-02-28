@@ -29,7 +29,7 @@ if ($config -notmatch '^(Debug|Release|RelWithDebInfo)$')
 $Env:BUILD_DIR = "build\$arch"
 
 function Build-Project {
-    cmake -G "Visual Studio 17 2022" -A $platform -B "$Env:BUILD_DIR" "$Env:CMAKE_OPTIONS"
+    cmake -G "Visual Studio 17 2022" -A $platform -B "$Env:BUILD_DIR" "$Env:CMAKE_OPTIONS" "-DMODULE=$Env:MODULE"
 
     cmake --build "$Env:BUILD_DIR" --target $target --config $config
 }

@@ -1,6 +1,7 @@
 package manager
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -65,7 +66,8 @@ func T_InstallDirectory(profileName string) error {
 			}
 		}
 	} else {
-		logger.SharedLogger.Info("No entries to extract")
+		logger.SharedLogger.GoRoutineError("No entries to extract")
+		return fmt.Errorf("no entries to extract")
 	}
 
 	logger.SharedLogger.Info("Cleaning temp files")

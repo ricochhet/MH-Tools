@@ -16,7 +16,7 @@ func main() {
 	} else {
 		// Alloc console for development builds
 		// _, stdout, _ := win32.AllocConsole()
-		// logger.Stdout = stdout
+		logger.Stdout = os.Stdout
 		core.A_InitializeUI()
 	}
 }

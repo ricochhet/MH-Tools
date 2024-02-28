@@ -18,6 +18,7 @@ func SaveIndexPath(profileName string, directoryPath string) error {
 
 	indexPathSaved := fsprovider.Relative(config.DataDirectory, config.SettingsDirectory, profileName, config.SavedIndexPathFile)
 	if err := os.MkdirAll(filepath.Dir(indexPathSaved), os.ModePerm); err != nil {
+		logger.SharedLogger.GoRoutineError(err.Error())
 		return err
 	}
 
@@ -25,10 +26,12 @@ func SaveIndexPath(profileName string, directoryPath string) error {
 		defer file.Close()
 		fsprovider.Overwrite(file)
 		file.WriteString(directoryPath + "\n")
-		return err
 	} else {
+		logger.SharedLogger.GoRoutineError(err.Error())
 		return err
 	}
+
+	return nil
 }
 
 func GetSavedIndexPath(profileName string) (string, error) {

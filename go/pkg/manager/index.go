@@ -11,29 +11,6 @@ import (
 	"github.com/ricochhet/mhwarchivemanager/pkg/logger"
 )
 
-func SaveIndexPath(profileName string, directoryPath string) error {
-	if len(profileName) == 0 {
-		profileName = config.DefaultProfileName
-	}
-
-	indexPathSaved := fsprovider.Relative(config.DataDirectory, config.SettingsDirectory, profileName, config.SavedIndexPathFile)
-	if err := os.MkdirAll(filepath.Dir(indexPathSaved), os.ModePerm); err != nil {
-		logger.SharedLogger.GoRoutineError(err.Error())
-		return err
-	}
-
-	if file, err := os.OpenFile(indexPathSaved, os.O_RDWR|os.O_CREATE, 0666); err == nil {
-		defer file.Close()
-		fsprovider.Overwrite(file)
-		file.WriteString(directoryPath + "\n")
-	} else {
-		logger.SharedLogger.GoRoutineError(err.Error())
-		return err
-	}
-
-	return nil
-}
-
 func GetSavedIndexPath(profileName string) (string, error) {
 	if len(profileName) == 0 {
 		profileName = config.DefaultProfileName
@@ -86,7 +63,30 @@ func ExcludeFromIndex(profileName string) ([]string, error) {
 	return entries, nil
 }
 
-func IndexDirectory(profileName string, directoryPath string) error {
+func T_SaveIndexPath(profileName string, directoryPath string) error {
+	if len(profileName) == 0 {
+		profileName = config.DefaultProfileName
+	}
+
+	indexPathSaved := fsprovider.Relative(config.DataDirectory, config.SettingsDirectory, profileName, config.SavedIndexPathFile)
+	if err := os.MkdirAll(filepath.Dir(indexPathSaved), os.ModePerm); err != nil {
+		logger.SharedLogger.GoRoutineError(err.Error())
+		return err
+	}
+
+	if file, err := os.OpenFile(indexPathSaved, os.O_RDWR|os.O_CREATE, 0666); err == nil {
+		defer file.Close()
+		fsprovider.Overwrite(file)
+		file.WriteString(directoryPath + "\n")
+	} else {
+		logger.SharedLogger.GoRoutineError(err.Error())
+		return err
+	}
+
+	return nil
+}
+
+func T_IndexDirectory(profileName string, directoryPath string) error {
 	if len(profileName) == 0 {
 		profileName = config.DefaultProfileName
 	}

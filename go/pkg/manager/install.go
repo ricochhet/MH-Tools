@@ -1,9 +1,7 @@
 package manager
 
 import (
-	"bufio"
 	"os"
-	"path"
 	"path/filepath"
 	"strings"
 
@@ -13,7 +11,7 @@ import (
 	"github.com/ricochhet/mhwarchivemanager/pkg/sevenzip"
 )
 
-func InstallDirectory(profileName string) error {
+func T_InstallDirectory(profileName string) error {
 	if len(profileName) == 0 {
 		profileName = config.DefaultProfileName
 	}
@@ -43,7 +41,7 @@ func InstallDirectory(profileName string) error {
 		return err
 	}
 
-	entries, err := extract(file, tempPath)
+	entries, err := sevenzip.ExtractFromList(file, tempPath)
 	if err != nil {
 		logger.SharedLogger.GoRoutineError(err.Error())
 		return err
@@ -81,38 +79,4 @@ func InstallDirectory(profileName string) error {
 	}
 
 	return nil
-}
-
-func extract(file *os.File, tempPath string) ([]string, error) {
-	extractedDirs := []string{}
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		if len(scanner.Text()) == 0 {
-			continue
-		}
-		zipFilePath := strings.TrimSpace(scanner.Text())
-		extractedDir := path.Join(tempPath, fsprovider.FileNameWithoutExtension(zipFilePath))
-		logger.SharedLogger.Info("Extracting: " + extractedDir)
-		szerr, err := sevenzip.Extract(zipFilePath, tempPath)
-		if err != nil {
-			return nil, err
-		}
-
-		if szerr == sevenzip.ProcessNotFound {
-			return nil, err
-		}
-
-		if szerr == sevenzip.CouldNotExtract {
-			logger.SharedLogger.Error("Error extracting " + zipFilePath + ": " + err.Error())
-			continue
-		}
-
-		extractedDirs = append(extractedDirs, extractedDir)
-	}
-
-	if err := scanner.Err(); err != nil {
-		return nil, err
-	}
-
-	return extractedDirs, nil
 }

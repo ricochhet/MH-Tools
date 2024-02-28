@@ -1,4 +1,4 @@
-package manager
+package core
 
 import (
 	"os"
@@ -52,15 +52,15 @@ func A_InitializeCommandLine() {
 	}
 
 	if _, err := util.Cmd(os.Args, "launch", 0); err == nil {
-		go AGR_LaunchProgram(A_DummyUpdateFunc)
+		go A_LaunchProgramThread(A_DummyUpdateFunc)
 	}
 
 	if args, err := util.Cmd(os.Args, "index", 2); err == nil {
-		go AGR_IndexDirectory(args[0], args[1], A_DummyUpdateFunc)
+		go A_IndexDirectoryThread(args[0], args[1], A_DummyUpdateFunc)
 	}
 
 	if args, err := util.Cmd(os.Args, "install", 2); err == nil {
-		go AGR_InstallDirectory(args[0], A_DummyUpdateFunc)
+		go A_InstallDirectoryThread(args[0], A_DummyUpdateFunc)
 	}
 
 	if args, err := util.Cmd(os.Args, "add_profile", 1); err == nil {

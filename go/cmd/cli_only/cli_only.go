@@ -1,7 +1,7 @@
 package main
 
-import "github.com/ricochhet/mhwarchivemanager/pkg/manager"
+import "github.com/ricochhet/mhwarchivemanager/pkg/core"
 
 func main() {
-	manager.A_InitializeCommandLine()
+	core.A_InitializeCommandLine()
 }

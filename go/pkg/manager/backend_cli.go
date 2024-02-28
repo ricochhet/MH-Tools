@@ -52,15 +52,15 @@ func A_InitializeCommandLine() {
 	}
 
 	if _, err := util.Cmd(os.Args, "launch", 0); err == nil {
-		A_LaunchProgram(A_DummyUpdateFunc)
+		go AGR_LaunchProgram(A_DummyUpdateFunc)
 	}
 
 	if args, err := util.Cmd(os.Args, "index", 2); err == nil {
-		A_IndexDirectory(args[0], args[1], A_DummyUpdateFunc)
+		go AGR_IndexDirectory(args[0], args[1], A_DummyUpdateFunc)
 	}
 
 	if args, err := util.Cmd(os.Args, "install", 2); err == nil {
-		A_InstallDirectory(args[0], A_DummyUpdateFunc)
+		go AGR_InstallDirectory(args[0], A_DummyUpdateFunc)
 	}
 
 	if args, err := util.Cmd(os.Args, "add_profile", 1); err == nil {

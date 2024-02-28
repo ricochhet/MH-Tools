@@ -1,6 +1,7 @@
 package manager
 
 import (
+	"fmt"
 	"os"
 
 	g "github.com/AllenDang/giu"
@@ -24,13 +25,31 @@ func buttonExit() {
 }
 
 func buttonAdd() {
-	A_AddProfile(ui_ProfileName, g.Update)
-	ui_ComboItems = A_UpdateProfileList()
+	if err := A_AddProfile(ui_ProfileName, g.Update); err != nil {
+		logger.SharedLogger.Error(err.Error())
+		return
+	}
+
+	if arr, err := A_UpdateProfileList(); err != nil {
+		logger.SharedLogger.Error(err.Error())
+		return
+	} else {
+		ui_ComboItems = arr
+	}
 }
 
 func buttonRemove() {
-	A_RemoveProfile(ui_ProfileName, g.Update)
-	ui_ComboItems = A_UpdateProfileList()
+	if err := A_RemoveProfile(ui_ProfileName, g.Update); err != nil {
+		logger.SharedLogger.Error(err.Error())
+		return
+	}
+
+	if arr, err := A_UpdateProfileList(); err != nil {
+		logger.SharedLogger.Error(err.Error())
+		return
+	} else {
+		ui_ComboItems = arr
+	}
 }
 
 func buttonIndex() {
@@ -70,7 +89,13 @@ func ui() {
 }
 
 func A_InitializeUI() {
-	ui_ComboItems = A_UpdateProfileList()
+	if arr, err := A_UpdateProfileList(); err != nil {
+		logger.SharedLogger.Error(err.Error())
+		return
+	} else {
+		ui_ComboItems = arr
+	}
+
 	wnd := g.NewMasterWindow("MHWArchiveManager", 640, 360, 0)
 	wnd.Run(ui)
 }
@@ -88,11 +113,16 @@ func A_LaunchProgram(giuUpdate func()) {
 
 func A_IndexDirectory(ptr_ComboItem string, ptr_IndexPath string, giuUpdate func()) {
 	logger.ClearCache()
-	savedIndexPathStr := GetSavedIndexPath(ptr_ComboItem)
+	savedIndexPathStr, err := GetSavedIndexPath(ptr_ComboItem)
+	if err != nil {
+		logger.SharedLogger.Error(err.Error())
+		return
+	}
 
 	if len(ptr_IndexPath) != 0 {
 		err := A_HandleIndexDirectory(ptr_ComboItem, ptr_IndexPath, true, giuUpdate)
 		if err != nil {
+			logger.SharedLogger.Error(err.Error())
 			return
 		}
 	}
@@ -100,6 +130,7 @@ func A_IndexDirectory(ptr_ComboItem string, ptr_IndexPath string, giuUpdate func
 	if len(ptr_IndexPath) == 0 && len(savedIndexPathStr) != 0 {
 		err := A_HandleIndexDirectory(ptr_ComboItem, savedIndexPathStr, false, giuUpdate)
 		if err != nil {
+			logger.SharedLogger.Error(err.Error())
 			return
 		}
 	}
@@ -112,7 +143,6 @@ func A_IndexDirectory(ptr_ComboItem string, ptr_IndexPath string, giuUpdate func
 
 func A_HandleIndexDirectory(ptr_ComboItem string, path string, saveIndexPath bool, giuUpdate func()) error {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
-		logger.SharedLogger.Error("Index path does not exist")
 		return err
 	}
 
@@ -134,44 +164,52 @@ func A_InstallDirectory(ptr_ComboItem string, giuUpdate func()) {
 	go InstallDirectory(ptr_ComboItem)
 }
 
-func A_AddProfile(ptr_ProfileName string, giuUpdate func()) {
+func A_AddProfile(ptr_ProfileName string, giuUpdate func()) error {
 	logger.ClearCache()
 	if len(ptr_ProfileName) == 0 {
-		logger.SharedLogger.Warn("Profile name cannot be blank")
-		return
+		return fmt.Errorf("profile name cannot be blank")
 	}
 
 	logger.SharedLogger.Info("Adding profile: " + ptr_ProfileName)
 	giuUpdate()
 
-	AddProfile(ptr_ProfileName)
+	err := AddProfile(ptr_ProfileName)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func A_RemoveProfile(ptr_ProfileName string, giuUpdate func()) {
+func A_RemoveProfile(ptr_ProfileName string, giuUpdate func()) error {
 	logger.ClearCache()
 	if len(ptr_ProfileName) == 0 {
-		logger.SharedLogger.Warn("Profile name cannot be blank")
-		return
+		return fmt.Errorf("profile name cannot be blank")
 	}
 
 	logger.SharedLogger.Info("Removing profile: " + ptr_ProfileName)
 	giuUpdate()
 
-	RemoveProfile(ptr_ProfileName)
+	err := RemoveProfile(ptr_ProfileName)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func A_UpdateProfileList() []string {
+func A_UpdateProfileList() ([]string, error) {
 	var slice []string
 	slice = append(slice, config.DefaultProfileName)
 
 	profileList, err := ReadAllProfiles()
 	if err != nil {
 		logger.SharedLogger.Error(err.Error())
-		return slice
+		return slice, err
 	}
 
 	slice = append(slice, profileList...)
-	return slice
+	return slice, nil
 }
 
 func A_Exit() {

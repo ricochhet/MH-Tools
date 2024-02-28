@@ -14,8 +14,9 @@ func main() {
 		logger.Stdout = os.Stdout
 		manager.A_InitializeCommandLine()
 	} else {
-		_, stdout, _ := win32.AllocConsole()
-		logger.Stdout = stdout
+		// Alloc console for development builds
+		// _, stdout, _ := win32.AllocConsole()
+		// logger.Stdout = stdout
 		manager.A_InitializeUI()
 	}
 }

@@ -41,7 +41,6 @@ func AddProfile(name string) error {
 	fsprovider.WriteEntriesToFile(file, items)
 
 	if err := scanner.Err(); err != nil {
-		logger.SharedLogger.Error(err.Error())
 		return err
 	}
 
@@ -75,7 +74,6 @@ func RemoveProfile(name string) error {
 	fsprovider.WriteEntriesToFile(file, items)
 
 	if err := scanner.Err(); err != nil {
-		logger.SharedLogger.Error(err.Error())
 		return err
 	}
 
@@ -103,7 +101,6 @@ func ReadAllProfiles() ([]string, error) {
 	}
 
 	if err := scanner.Err(); err != nil {
-		logger.SharedLogger.Error(err.Error())
 		return nil, err
 	}
 

@@ -80,6 +80,7 @@ func A_InitializeCommandLine() {
 	if args, err := util.Cmd(os.Args, "pak", 3); err == nil {
 		selection, err := strconv.Atoi(args[2])
 		if err != nil {
+			logger.SharedLogger.Error(err.Error())
 			return
 		}
 		pak.ProcessDirectory(args[0], args[1], selection != 0)
@@ -88,6 +89,7 @@ func A_InitializeCommandLine() {
 	if args, err := util.Cmd(os.Args, "unpak", 3); err == nil {
 		selection, err := strconv.Atoi(args[2])
 		if err != nil {
+			logger.SharedLogger.Error(err.Error())
 			return
 		}
 		pak.ExtractDirectory(args[0], args[1], selection != 0)

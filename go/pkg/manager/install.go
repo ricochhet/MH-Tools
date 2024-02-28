@@ -19,29 +19,41 @@ func InstallDirectory(profileName string) error {
 	}
 
 	dirPath := fsprovider.Relative(config.DataDirectory, config.SettingsDirectory, profileName, config.OutputDirectory)
-	tempPath := fsprovider.Relative(config.DataDirectory, config.SettingsDirectory, profileName, config.TempDirectory)
-
 	if err := fsprovider.RemoveAll(dirPath); err != nil {
+		logger.SharedLogger.GoRoutineError(err.Error())
 		return err
 	}
 
-	file, err := os.Open(fsprovider.Relative(config.DataDirectory, config.SettingsDirectory, profileName, config.IndexFile))
+	tempPath := fsprovider.Relative(config.DataDirectory, config.SettingsDirectory, profileName, config.TempDirectory)
+	indexPath := fsprovider.Relative(config.DataDirectory, config.SettingsDirectory, profileName, config.IndexFile)
+	if err := os.MkdirAll(filepath.Dir(indexPath), os.ModePerm); err != nil {
+		logger.SharedLogger.GoRoutineError(err.Error())
+		return err
+	}
+
+	file, err := os.OpenFile(indexPath, os.O_RDWR|os.O_CREATE, 0666)
 	if err != nil {
-		logger.SharedLogger.Error(err.Error())
+		logger.SharedLogger.GoRoutineError(err.Error())
 		return err
 	}
 	defer file.Close()
 
 	if err := os.MkdirAll(dirPath, os.ModePerm); err != nil {
-		logger.SharedLogger.Error(err.Error())
+		logger.SharedLogger.GoRoutineError(err.Error())
 		return err
 	}
 
-	if entries := extract(file, tempPath); len(entries) != 0 {
+	entries, err := extract(file, tempPath)
+	if err != nil {
+		logger.SharedLogger.GoRoutineError(err.Error())
+		return err
+	}
+
+	if len(entries) != 0 {
 		for _, v := range entries {
 			if err := filepath.Walk(v, func(walkPath string, info os.FileInfo, err error) error {
 				if err != nil {
-					logger.SharedLogger.Error(err.Error())
+					logger.SharedLogger.GoRoutineError(err.Error())
 					return err
 				}
 				if info.IsDir() && strings.ToLower(info.Name()) == "nativepc" {
@@ -50,17 +62,19 @@ func InstallDirectory(profileName string) error {
 				}
 				return nil
 			}); err != nil {
-				logger.SharedLogger.Error(err.Error())
+				logger.SharedLogger.GoRoutineError(err.Error())
 				return err
 			}
 		}
+	} else {
+		logger.SharedLogger.Info("No entries to extract")
 	}
 
 	logger.SharedLogger.Info("Cleaning temp files")
 	err = fsprovider.RemoveAll(tempPath)
 
 	if err != nil {
-		logger.SharedLogger.Error(err.Error())
+		logger.SharedLogger.GoRoutineError(err.Error())
 		return err
 	} else {
 		logger.SharedLogger.Info("Done")
@@ -69,7 +83,7 @@ func InstallDirectory(profileName string) error {
 	return nil
 }
 
-func extract(file *os.File, tempPath string) []string {
+func extract(file *os.File, tempPath string) ([]string, error) {
 	extractedDirs := []string{}
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
@@ -80,9 +94,12 @@ func extract(file *os.File, tempPath string) []string {
 		extractedDir := path.Join(tempPath, fsprovider.FileNameWithoutExtension(zipFilePath))
 		logger.SharedLogger.Info("Extracting: " + extractedDir)
 		szerr, err := sevenzip.Extract(zipFilePath, tempPath)
+		if err != nil {
+			return nil, err
+		}
+
 		if szerr == sevenzip.ProcessNotFound {
-			logger.SharedLogger.Error("Error " + err.Error())
-			break
+			return nil, err
 		}
 
 		if szerr == sevenzip.CouldNotExtract {
@@ -94,9 +111,8 @@ func extract(file *os.File, tempPath string) []string {
 	}
 
 	if err := scanner.Err(); err != nil {
-		logger.SharedLogger.Error(err.Error())
-		return nil
+		return nil, err
 	}
 
-	return extractedDirs
+	return extractedDirs, nil
 }

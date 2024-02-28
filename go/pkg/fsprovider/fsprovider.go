@@ -21,7 +21,7 @@ func WriteEntriesToFile(file *os.File, entries []string) {
 	}
 }
 
-func ScanValidEntries(file *os.File) []string {
+func ScanValidEntries(file *os.File) ([]string, error) {
 	existingEntries := []string{}
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
@@ -36,10 +36,9 @@ func ScanValidEntries(file *os.File) []string {
 	}
 
 	if err := scanner.Err(); err != nil {
-		logger.SharedLogger.Error(err.Error())
-		return nil
+		return nil, err
 	}
-	return existingEntries
+	return existingEntries, nil
 }
 
 func Relative(directories ...string) string {
@@ -71,7 +70,6 @@ func FileNameWithoutExtension(fileName string) string {
 func RemoveAll(fileName string) error {
 	err := os.RemoveAll(fileName)
 	if err != nil {
-		logger.SharedLogger.Error(err.Error())
 		return err
 	}
 

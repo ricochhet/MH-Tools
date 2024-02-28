@@ -14,28 +14,36 @@ import (
 func Launch() error {
 	launchPath := fsprovider.Relative(config.DataDirectory, config.SettingsDirectory, config.LaunchFile)
 	if err := os.MkdirAll(filepath.Dir(launchPath), os.ModePerm); err != nil {
+		logger.SharedLogger.GoRoutineError(err.Error())
 		return err
 	}
 
 	file, err := os.OpenFile(launchPath, os.O_RDWR|os.O_CREATE, 0666)
 	if err != nil {
+		logger.SharedLogger.GoRoutineError(err.Error())
 		return err
 	}
 	defer file.Close()
 
-	if entries := fsprovider.ScanValidEntries(file); len(entries) != 0 {
+	entries, err := fsprovider.ScanValidEntries(file)
+	if err != nil {
+		logger.SharedLogger.GoRoutineError(err.Error())
+		return err
+	}
+
+	if len(entries) != 0 {
 		firstEntry := entries[0]
 		if _, err := os.Stat(firstEntry); errors.Is(err, os.ErrNotExist) {
-			logger.SharedLogger.Warn("The executable " + firstEntry + " could not be found")
+			logger.SharedLogger.GoRoutineError(err.Error())
 			return err
 		}
 
 		err = process.RunExecutable(firstEntry, false)
 		if err != nil {
-			logger.SharedLogger.Error(err.Error())
+			logger.SharedLogger.GoRoutineError(err.Error())
 			return err
 		}
 	}
 
-	return err
+	return nil
 }

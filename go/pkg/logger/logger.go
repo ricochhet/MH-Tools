@@ -16,6 +16,7 @@ const (
 	InfoLevel
 	WarnLevel
 	ErrorLevel
+	GoRoutineErrorLevel
 )
 
 type Logger struct {
@@ -47,6 +48,9 @@ func (l *Logger) log(level LogLevel, message string, writer io.Writer) {
 	case ErrorLevel:
 		levelName = "ERROR"
 		color = "\033[0;31m"
+	case GoRoutineErrorLevel:
+		levelName = "GOROUTINE_ERROR"
+		color = "\033[0;31m"
 	}
 
 	if level >= l.MinLevel {
@@ -71,6 +75,10 @@ func (l *Logger) Warn(message string) {
 
 func (l *Logger) Error(message string) {
 	l.log(ErrorLevel, message, Stdout)
+}
+
+func (l *Logger) GoRoutineError(message string) {
+	l.log(GoRoutineErrorLevel, message, Stdout)
 }
 
 func (l *Logger) NewLine() {

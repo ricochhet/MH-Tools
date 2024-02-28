@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"slices"
 	"strconv"
-
-	"github.com/ricochhet/mhwarchivemanager/pkg/logger"
 )
 
 const BIN_SIZE int = 2
@@ -21,8 +19,7 @@ func Cmd(args []string, name string, argCount int) ([]string, error) {
 				return nameArgs, nil
 			}
 
-			logger.SharedLogger.Error("Expected " + strconv.Itoa(argCount) + " arguments, but got " + strconv.Itoa(len(args)-BIN_SIZE))
-			return nil, fmt.Errorf("length of args is less than argCount")
+			return nil, fmt.Errorf("Expected " + strconv.Itoa(argCount) + " arguments, but got " + strconv.Itoa(len(args)-BIN_SIZE))
 		}
 
 		return nil, fmt.Errorf("%s not found", name)

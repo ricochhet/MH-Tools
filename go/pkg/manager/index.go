@@ -1,6 +1,7 @@
 package manager
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"slices"
@@ -24,30 +25,38 @@ func SaveIndexPath(profileName string, directoryPath string) error {
 		defer file.Close()
 		fsprovider.Overwrite(file)
 		file.WriteString(directoryPath + "\n")
-		return nil
+		return err
 	} else {
 		return err
 	}
 }
 
-func GetSavedIndexPath(profileName string) string {
+func GetSavedIndexPath(profileName string) (string, error) {
 	if len(profileName) == 0 {
 		profileName = config.DefaultProfileName
 	}
 
 	indexPathSaved := fsprovider.Relative(config.DataDirectory, config.SettingsDirectory, profileName, config.SavedIndexPathFile)
-	file, err := os.Open(indexPathSaved)
+	if err := os.MkdirAll(filepath.Dir(indexPathSaved), os.ModePerm); err != nil {
+		return "", err
+	}
+
+	file, err := os.OpenFile(indexPathSaved, os.O_RDWR|os.O_CREATE, 0666)
 	if err != nil {
-		return ""
+		return "", err
 	}
 	defer file.Close()
 
-	if entries := fsprovider.ScanValidEntries(file); len(entries) != 0 {
-		return entries[0]
+	entries, err := fsprovider.ScanValidEntries(file)
+	if err != nil {
+		return "", err
 	}
 
-	logger.SharedLogger.Warn("No entries in saved index file")
-	return ""
+	if len(entries) != 0 {
+		return entries[0], nil
+	}
+
+	return "", fmt.Errorf("no entries in saved index file")
 }
 
 func ExcludeFromIndex(profileName string) ([]string, error) {
@@ -66,7 +75,12 @@ func ExcludeFromIndex(profileName string) ([]string, error) {
 	}
 	defer file.Close()
 
-	return fsprovider.ScanValidEntries(file), nil
+	entries, err := fsprovider.ScanValidEntries(file)
+	if err != nil {
+		return nil, err
+	}
+
+	return entries, nil
 }
 
 func IndexDirectory(profileName string, directoryPath string) error {
@@ -76,24 +90,32 @@ func IndexDirectory(profileName string, directoryPath string) error {
 
 	indexPath := fsprovider.Relative(config.DataDirectory, config.SettingsDirectory, profileName, config.IndexFile)
 	if err := os.MkdirAll(filepath.Dir(indexPath), os.ModePerm); err != nil {
+		logger.SharedLogger.GoRoutineError(err.Error())
 		return err
 	}
 
 	file, err := os.OpenFile(indexPath, os.O_RDWR|os.O_CREATE, 0666)
 	if err != nil {
+		logger.SharedLogger.GoRoutineError(err.Error())
 		return err
 	}
 	defer file.Close()
 
 	exclusionEntries, err := ExcludeFromIndex(profileName)
 	if err != nil {
+		logger.SharedLogger.GoRoutineError(err.Error())
 		return err
 	}
 
-	existingEntries := fsprovider.ScanValidEntries(file)
+	existingEntries, err := fsprovider.ScanValidEntries(file)
+	if err != nil {
+		logger.SharedLogger.GoRoutineError(err.Error())
+		return err
+	}
 
 	err = filepath.Walk(directoryPath, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
+			logger.SharedLogger.GoRoutineError(err.Error())
 			return err
 		}
 
@@ -110,8 +132,13 @@ func IndexDirectory(profileName string, directoryPath string) error {
 		return nil
 	})
 
+	if err != nil {
+		logger.SharedLogger.GoRoutineError(err.Error())
+		return err
+	}
+
 	fsprovider.Overwrite(file)
 	fsprovider.WriteEntriesToFile(file, existingEntries)
 
-	return err
+	return nil
 }

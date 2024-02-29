@@ -1,7 +1,6 @@
 package manager
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 	"slices"
@@ -36,7 +35,7 @@ func GetSavedIndexPath(profileName string) (string, error) {
 		return entries[0], nil
 	}
 
-	return "", fmt.Errorf("no entries in saved index file")
+	return "", nil
 }
 
 func ExcludeFromIndex(profileName string) ([]string, error) {

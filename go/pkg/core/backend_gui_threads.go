@@ -33,7 +33,6 @@ func A_IndexDirectoryThread(ptr_ComboItem string, ptr_IndexPath string, giuUpdat
 	savedIndexPathStr, err := manager.GetSavedIndexPath(ptr_ComboItem)
 	if err != nil {
 		logger.SharedLogger.GoRoutineError(err.Error())
-		return
 	}
 
 	if len(ptr_IndexPath) != 0 {

@@ -11,3 +11,5 @@ go build -o ..\..\build\MHWArchiveManager.Gui.exe -ldflags="-s -w -H=windowsgui 
 Write-Host "Building MHWArchiveManager.Cli"
 Set-Location ..\cli_only
 go build -o ..\..\build\MHWArchiveManager.Cli.exe -ldflags="-s -w -extldflags=-static" .
+
+Set-Location ..\..\

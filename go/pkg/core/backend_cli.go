@@ -33,6 +33,16 @@ func A_InitializeCommandLine() {
 		}
 	}
 
+	if args, err := util.Cmd(os.Args, "checksum", 1); err == nil {
+		checksum, err := fsprovider.CalculateChecksum(args[0])
+		if err != nil {
+			logger.SharedLogger.Error(err.Error())
+			return
+		}
+
+		logger.SharedLogger.Info(checksum)
+	}
+
 	if args, err := util.Cmd(os.Args, "copy", 2); err == nil {
 		if err := fsprovider.CopyDirectory(args[0], args[1]); err != nil {
 			logger.SharedLogger.Error(err.Error())

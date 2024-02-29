@@ -101,7 +101,7 @@ func CopyDirectory(destination, source string) error {
 			return nil
 		}
 
-		in, _ := os.Open(path)
+		in, err := os.Open(path)
 		if err != nil {
 			return err
 		}

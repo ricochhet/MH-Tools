@@ -15,6 +15,11 @@ import (
 	"github.com/ricochhet/mhwarchivemanager/pkg/logger"
 )
 
+func Exists(filename string) bool {
+	_, err := os.Stat(filename)
+	return !os.IsNotExist(err)
+}
+
 func WriteEntriesToFile(file *os.File, entries []string) {
 	for _, entry := range entries {
 		file.WriteString(entry + "\n")

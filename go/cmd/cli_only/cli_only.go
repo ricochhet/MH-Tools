@@ -1,7 +1,13 @@
 package main
 
-import "github.com/ricochhet/mhwarchivemanager/pkg/core"
+import (
+	"os"
+
+	"github.com/ricochhet/mhwarchivemanager/pkg/core"
+	"github.com/ricochhet/mhwarchivemanager/pkg/logger"
+)
 
 func main() {
+	logger.Stdout = os.Stdout
 	core.A_InitializeCommandLine()
 }

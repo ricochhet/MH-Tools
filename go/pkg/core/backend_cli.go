@@ -112,4 +112,11 @@ func A_InitializeCommandLine() {
 	if args, err := util.Cmd(os.Args, "decompress", 1); err == nil {
 		pak.DecompressPakData(args[0])
 	}
+
+	if args, err := util.Cmd(os.Args, "script", 1); err == nil {
+		err := sevenzip.Parse(args[0])
+		if err != nil {
+			logger.SharedLogger.Error(err.Error())
+		}
+	}
 }

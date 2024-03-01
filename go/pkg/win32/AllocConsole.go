@@ -6,7 +6,7 @@ import (
 	"os"
 	"syscall"
 
-	"github.com/ricochhet/mhwarchivemanager/pkg/ansi"
+	"github.com/ricochhet/mhwarchivemanager/pkg/thirdparty/ansi"
 )
 
 func AllocConsole() (aIn, aOut, aErr io.Writer) {

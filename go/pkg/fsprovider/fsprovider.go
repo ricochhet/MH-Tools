@@ -26,23 +26,38 @@ func WriteEntriesToFile(file *os.File, entries []string) {
 	}
 }
 
-func ScanValidEntries(file *os.File) ([]string, error) {
-	existingEntries := []string{}
+func Scanner(file *os.File) ([]string, error) {
+	entries := []string{}
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		if len(scanner.Text()) == 0 {
 			continue
 		}
-		if _, err := os.Stat(scanner.Text()); err == nil {
-			existingEntries = append(existingEntries, scanner.Text())
-		} else {
-			logger.SharedLogger.Info("Invalid Entry: " + scanner.Text())
-		}
+		entries = append(entries, scanner.Text())
 	}
 
 	if err := scanner.Err(); err != nil {
 		return nil, err
 	}
+
+	return entries, nil
+}
+
+func ScanExistingFiles(file *os.File) ([]string, error) {
+	existingEntries := []string{}
+	entries, err := Scanner(file)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, i := range entries {
+		if _, err := os.Stat(i); err == nil {
+			existingEntries = append(existingEntries, i)
+		} else {
+			logger.SharedLogger.Info("Invalid Entry: " + i)
+		}
+	}
+
 	return existingEntries, nil
 }
 
@@ -81,7 +96,7 @@ func RemoveAll(fileName string) error {
 	return nil
 }
 
-func CopyDirectory(destination, source string) error {
+func CopyDirectory(source, destination string) error {
 	return filepath.Walk(source, func(path string, info fs.FileInfo, err error) error {
 		if err != nil {
 			return err

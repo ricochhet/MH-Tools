@@ -26,7 +26,7 @@ func GetSavedIndexPath(profileName string) (string, error) {
 	}
 	defer file.Close()
 
-	entries, err := fsprovider.ScanValidEntries(file)
+	entries, err := fsprovider.ScanExistingFiles(file)
 	if err != nil {
 		return "", err
 	}
@@ -54,7 +54,7 @@ func ExcludeFromIndex(profileName string) ([]string, error) {
 	}
 	defer file.Close()
 
-	entries, err := fsprovider.ScanValidEntries(file)
+	entries, err := fsprovider.ScanExistingFiles(file)
 	if err != nil {
 		return nil, err
 	}
@@ -109,7 +109,7 @@ func T_IndexDirectory(profileName string, directoryPath string) error {
 		return err
 	}
 
-	existingEntries, err := fsprovider.ScanValidEntries(file)
+	existingEntries, err := fsprovider.ScanExistingFiles(file)
 	if err != nil {
 		logger.SharedLogger.GoRoutineError(err.Error())
 		return err

@@ -10,7 +10,7 @@ import (
 	"syscall"
 	"unsafe"
 
-	"github.com/ricochhet/mhwarchivemanager/pkg/isatty"
+	"github.com/ricochhet/mhwarchivemanager/pkg/thirdparty/isatty"
 )
 
 var (

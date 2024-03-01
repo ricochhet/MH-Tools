@@ -1,0 +1,17 @@
+extract ".\Collection\10.31.zip" ".\Temp\"
+extract ".\Collection\Chinese Fonts-5434-1-0-1623819430.zip" ".\Temp\"
+extract ".\Collection\1.1 (fixed one)-4772-1-1-1607119099.zip" ".\Temp\"
+extract ".\Collection\No Blue Special Scope-2740-1-0-1583560575.7z" ".\Temp\"
+extract ".\Collection\Reduced Velkhana EFXs-6775-1-0-1693268223.zip" ".\Temp\"
+extract ".\Collection\Remove Monster Roar Blur-6777-1-0-1-1704995683.zip" ".\Temp\"
+extract ".\Collection\Active Skill Popup Removal v2.5.2-2300-2-5-2-1608211345.7z" ".\Temp\"
+
+copy ".\Temp\10.31\nativePC" ".\Output\nativePC"
+copy ".\Temp\Chinese Fonts-5434-1-0-1623819430\nativePC" ".\Output\nativePC"
+copy ".\Temp\1.1 (fixed one)-4772-1-1-1607119099\nativePC" ".\Output\nativePC"
+copy ".\Temp\Reduced Velkhana EFXs-6775-1-0-1693268223\nativePC" ".\Output\nativePC"
+copy ".\Temp\No Blue Special Scope-2740-1-0-1583560575\No Blur Special Scope\nativePC" ".\Output\nativePC"
+copy ".\Temp\Remove Monster Roar Blur-6777-1-0-1-1704995683\nativePC\vfx\efx\em" ".\Output\nativePC\vfx\efx\em"
+copy ".\Temp\Active Skill Popup Removal v2.5.2-2300-2-5-2-1608211345\Active Skill Popup Removal_v2_5_2 (final)\Skills & System Messages\NativePC\ui\hud\tex" ".\Output\nativePC\ui\hud\tex"
+
+delete ".\Temp\"

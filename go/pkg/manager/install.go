@@ -10,6 +10,7 @@ import (
 	"github.com/ricochhet/mhwarchivemanager/pkg/fsprovider"
 	"github.com/ricochhet/mhwarchivemanager/pkg/logger"
 	"github.com/ricochhet/mhwarchivemanager/pkg/sevenzip"
+	"github.com/ricochhet/mhwarchivemanager/pkg/thirdparty/copy"
 )
 
 func T_InstallDirectory(profileName string) error {
@@ -57,7 +58,11 @@ func T_InstallDirectory(profileName string) error {
 				}
 				if info.IsDir() && strings.ToLower(info.Name()) == "nativepc" {
 					logger.SharedLogger.Info("Copying nativePC: " + walkPath)
-					fsprovider.CopyDirectory(dirPath, walkPath)
+					err := copy.Copy(walkPath, dirPath)
+					if err != nil {
+						return err
+					}
+					// fsprovider.CopyDirectory(walkPath, dirPath)
 				}
 				return nil
 			}); err != nil {

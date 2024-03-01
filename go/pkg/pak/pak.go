@@ -11,7 +11,7 @@ import (
 	"github.com/ricochhet/mhwarchivemanager/pkg/c"
 	"github.com/ricochhet/mhwarchivemanager/pkg/fsprovider"
 	"github.com/ricochhet/mhwarchivemanager/pkg/logger"
-	"github.com/ricochhet/mhwarchivemanager/pkg/murmurhash3"
+	"github.com/ricochhet/mhwarchivemanager/pkg/thirdparty/murmurhash3"
 )
 
 func ProcessDirectory(path string, outputFile string, embed bool) {

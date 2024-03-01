@@ -25,7 +25,7 @@ func T_Launch() error {
 	}
 	defer file.Close()
 
-	entries, err := fsprovider.ScanValidEntries(file)
+	entries, err := fsprovider.ScanExistingFiles(file)
 	if err != nil {
 		logger.SharedLogger.GoRoutineError(err.Error())
 		return err

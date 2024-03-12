@@ -15,3 +15,4 @@ go build -o "..\..\build\MHWArchiveManager.Cli.exe" -ldflags="-s -w -extldflags=
 Set-Location "..\..\"
 
 Copy-item -Path ".\scripts\MHW-BuildEffectRemovalMod.ps1" -Destination ".\build\"
+Copy-item -Path ".\scripts\MHW-BuildEffectRemovalMod2.ps1" -Destination ".\build\"

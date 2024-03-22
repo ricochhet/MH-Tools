@@ -36,7 +36,7 @@ func Parse(path string) error {
 			return fmt.Errorf("not enough arguments provided to function")
 		}
 
-		fnName := parts[0]
+		fnName := strings.ToLower(parts[0])
 		fnArgs := parts[1:]
 		switch fnName {
 		case "extract":

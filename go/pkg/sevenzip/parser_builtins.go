@@ -8,7 +8,7 @@ import (
 	"github.com/ricochhet/mhwarchivemanager/pkg/thirdparty/copy"
 )
 
-func builtinExtractFn(args []string) {
+func BuiltinExtractFn(args []string) {
 	if err := checkArgs(args, 2); err != nil {
 		return
 	}
@@ -18,7 +18,7 @@ func builtinExtractFn(args []string) {
 	}
 }
 
-func builtinCopyFn(args []string) {
+func BuiltinCopyFn(args []string) {
 	if err := checkArgs(args, 2); err != nil {
 		return
 	}
@@ -28,7 +28,7 @@ func builtinCopyFn(args []string) {
 	}
 }
 
-func builtinDeleteFn(args []string) {
+func BuiltinDeleteFn(args []string) {
 	if err := checkArgs(args, 1); err != nil {
 		return
 	}

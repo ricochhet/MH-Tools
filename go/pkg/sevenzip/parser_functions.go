@@ -3,11 +3,11 @@ package sevenzip
 func Execute(fnName string, fnArgs []string) {
 	switch fnName {
 	case "extract":
-		builtinExtractFn(fnArgs)
+		BuiltinExtractFn(fnArgs)
 	case "copy":
-		builtinCopyFn(fnArgs)
+		BuiltinCopyFn(fnArgs)
 	case "delete":
-		builtinDeleteFn(fnArgs)
+		BuiltinDeleteFn(fnArgs)
 	default:
 	}
 }

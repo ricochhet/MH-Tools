@@ -22,7 +22,7 @@ func A_LaunchProgramThread(giuUpdate func()) {
 
 func A_InstallDirectoryThread(ptr_ComboItem string, giuUpdate func()) {
 	logger.ClearCache()
-	logger.SharedLogger.Info("Creating installation at path: " + fsprovider.Relative(config.DataDirectory, config.OutputDirectory))
+	logger.SharedLogger.Info("Creating installation at path: " + fsprovider.Relative(config.DataDirectory, config.MtNativePC))
 	giuUpdate()
 
 	go manager.T_InstallDirectory(ptr_ComboItem)

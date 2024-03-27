@@ -2,6 +2,7 @@ package manager
 
 import (
 	"fmt"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
@@ -18,8 +19,21 @@ func T_InstallDirectory(profileName string) error {
 		profileName = config.DefaultProfileName
 	}
 
-	dirPath := fsprovider.Relative(config.DataDirectory, profileName, config.OutputDirectory)
-	if err := fsprovider.RemoveAll(dirPath); err != nil {
+	mtOutputPath := fsprovider.Relative(config.DataDirectory, profileName, config.MtNativePC)
+	reOutputPath := fsprovider.Relative(config.DataDirectory, profileName, config.ReNativePC)
+	refOutputPath := fsprovider.Relative(config.DataDirectory, profileName, config.RefNativePC)
+
+	if err := fsprovider.RemoveAll(mtOutputPath); err != nil {
+		logger.SharedLogger.GoRoutineError(err.Error())
+		return err
+	}
+
+	if err := fsprovider.RemoveAll(reOutputPath); err != nil {
+		logger.SharedLogger.GoRoutineError(err.Error())
+		return err
+	}
+
+	if err := fsprovider.RemoveAll(refOutputPath); err != nil {
 		logger.SharedLogger.GoRoutineError(err.Error())
 		return err
 	}
@@ -38,7 +52,17 @@ func T_InstallDirectory(profileName string) error {
 	}
 	defer file.Close()
 
-	if err := os.MkdirAll(dirPath, os.ModePerm); err != nil {
+	if err := os.MkdirAll(mtOutputPath, os.ModePerm); err != nil {
+		logger.SharedLogger.GoRoutineError(err.Error())
+		return err
+	}
+
+	if err := os.MkdirAll(reOutputPath, os.ModePerm); err != nil {
+		logger.SharedLogger.GoRoutineError(err.Error())
+		return err
+	}
+
+	if err := os.MkdirAll(refOutputPath, os.ModePerm); err != nil {
 		logger.SharedLogger.GoRoutineError(err.Error())
 		return err
 	}
@@ -56,13 +80,19 @@ func T_InstallDirectory(profileName string) error {
 					logger.SharedLogger.GoRoutineError(err.Error())
 					return err
 				}
-				if info.IsDir() && strings.ToLower(info.Name()) == "nativepc" {
-					logger.SharedLogger.Info("Copying nativePC: " + walkPath)
-					err := copy.Copy(walkPath, dirPath)
-					if err != nil {
+
+				if info.IsDir() {
+					if err := checkFilePaths(info, walkPath, mtOutputPath); err != nil {
 						return err
 					}
-					// fsprovider.CopyDirectory(walkPath, dirPath)
+
+					if err := checkFilePaths(info, walkPath, reOutputPath); err != nil {
+						return err
+					}
+
+					if err := checkFilePaths(info, walkPath, refOutputPath); err != nil {
+						return err
+					}
 				}
 				return nil
 			}); err != nil {
@@ -83,6 +113,18 @@ func T_InstallDirectory(profileName string) error {
 		return err
 	} else {
 		logger.SharedLogger.Info("Done")
+	}
+
+	return nil
+}
+
+func checkFilePaths(info fs.FileInfo, walkPath, outputPath string) error {
+	if strings.EqualFold(info.Name(), config.MtNativePC) {
+		logger.SharedLogger.Info("Copying nativePC (MT): " + walkPath)
+		err := copy.Copy(walkPath, outputPath)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil

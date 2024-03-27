@@ -9,7 +9,9 @@ const (
 	ProfileListFile    = "MHWArchiveManager_ProfileList.txt"
 	DefaultProfileName = "DefaultProfile"
 	TempDirectory      = "Temp"
-	OutputDirectory    = "nativePC"
+	MtNativePC         = "nativePC"
+	ReNativePC         = "natives"
+	RefNativePC        = "reframework"
 )
 
 var ValidFileTypes = []string{".zip", ".7z", ".rar"}
